@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+<form method="post" action="{{ url_for('add') }}">
+    {{ form.hidden_tag() }}
+    {{ form.shout_text }}
+    {{ form.recaptcha }}
+    <input type="submit"/>
+</form>
+</body>
+</html>
