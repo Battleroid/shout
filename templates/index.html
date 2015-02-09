@@ -11,5 +11,31 @@
     {{ form.recaptcha }}
     <input type="submit"/>
 </form>
+<main>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    {% if not shouts %}
+        <h3>No one is talking.</h3>
+    {% else %}
+        {% for shout in shouts %}
+        <div class="shout">
+            {{ shout.shout }}
+            <div class="meta">
+                <a href="{{ url_for('like', shout_id=shout.id) }}">Like</a>
+                |
+                <a href="{{ url_for('dislike', shout_id=shout.id) }}">Dislike</a>
+                {{ shout.likes }}, Submitted {{ shout.created.strftime('%Y-%m-%d') }}
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</main>
 </body>
 </html>
