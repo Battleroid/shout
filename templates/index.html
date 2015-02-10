@@ -3,39 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://bootflat.github.io/bootflat/css/bootflat.css">
 </head>
 <body>
-<form method="post" action="{{ url_for('add') }}">
-    {{ form.hidden_tag() }}
-    {{ form.shout_text }}
-    {{ form.recaptcha }}
-    <input type="submit"/>
-</form>
-<main>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+
+{#<form method="post" action="{{ url_for('add') }}">#}
+{#    {{ form.hidden_tag() }}#}
+{#    <div class="form-group">#}
+{#        {{ form.shout_text(class="form-control", placeholder="Something to say", **{'required':''}) }}#}
+{#        {{ form.recaptcha(class="form-control") }}#}
+{#        <input value="Post" class="btn btn-default" type="button"/>#}
+{#    </div>#}
+{#</form>#}
+{# create two separate instances for flashed messages, one for errors another for likes #}
+{#{% with messages = get_flashed_messages() %}#}
+{#    {% if messages %}#}
+{#        <ul>#}
+{#            {% for message in messages %}#}
+{#                <li>{{ message }}</li>#}
+{#            {% endfor %}#}
+{#        </ul>#}
+{#    {% endif %}#}
+{#{% endwith %}#}
+
+<div class="modal fade" id="shout-modal" role="dialog" aria-labelledby="Shout" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="close" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="Shout">Shout</h4>
+            </div>
+            <div class="modal-body">
+                <form id="shout-form" action="{{ url_for('add') }}" method="post">
+                    <div class="form-group">
+                        <label for="{{ form.shout_text.name }}">{{ form.shout_text.label }}</label>
+                        {{ form.shout_text(class="form-control", placeholder="Say something ...", **{'autofocus':'', 'required':''}) }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.recaptcha.name }}">{{ form.recaptcha.label }}</label>
+                        {{ form.recaptcha(class="form-control") }}
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input id="shout-submit" class="btn btn-primary" value="Post" type="submit"/>
+                <a class="btn" data-dismiss="modal" href="#">Nevermind</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header"><a class="navbar-brand" href="{{ url_for('index') }}">{{ title }}</a></div>
+        <div class="navbar-collapse collapse">
+            <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#shout-modal">New Post</button>
+        </div>
+    </div>
+</div>
+
+<div id="megaphone" class="container-fluid">
     {% if not shouts %}
         <h3>No one is talking.</h3>
     {% else %}
         {% for shout in shouts %}
-        <div class="shout">
-            {{ shout.shout }}
-            <div class="meta">
-                <a href="{{ url_for('like', shout_id=shout.id) }}">Like</a>
-                |
-                <a href="{{ url_for('dislike', shout_id=shout.id) }}">Dislike</a>
-                {{ shout.likes }}, Submitted {{ shout.created.strftime('%Y-%m-%d') }}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {{ shout.shout }}
+                </div>
+                <div class="panel-footer">
+                    <div class="btn-group btn-group-xs" role="group" aria-label="like/dislike">
+                        <a role="button" href="{{ url_for('like', shout_id=shout.id) }}" class="btn btn-default">Like</a>
+                        <a role="button" href="{{ url_for('dislike', shout_id=shout.id) }}" class="btn btn-default">Dislike</a>
+                    </div>
+                    <span class="badge">{{ shout.likes }}</span>
+                    <small>{{ shout.created|timesince }}</small>
+                </div>
             </div>
-        </div>
         {% endfor %}
     {% endif %}
-</main>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://bootflat.github.io/bootflat/js/icheck.min.js"></script>
+<script src="https://bootflat.github.io/bootflat/js/jquery.fs.selecter.min.js"></script>
+<script src="https://bootflat.github.io/bootflat/js/jquery.fs.stepper.min.js"></script>
+<script src="{{ url_for('static', filename='js/masonry.pkgd.min.js') }}"></script>
+<script>
+    var $cont = $('#megaphone');
+    $cont.masonry({
+        itemSelect: '.panel',
+        'gutter': 15
+    });
+    $("#shout-submit").click(function() {
+        $("#shout-form").submit();
+    });
+</script>
 </body>
 </html>

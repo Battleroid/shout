@@ -58,6 +58,7 @@ def flash_errors(form):
         for error in errors:
             flash('Error in %s: %s' % (getattr(form, field).label.text, error))
 
+
 @app.route('/like/<int:shout_id>', methods=['GET'])
 def like(shout_id):
     target = Shout.query.get(shout_id)
@@ -91,7 +92,7 @@ def dislike(shout_id):
     else:
         vote_time = session[shout_id] + timedelta(days=1)
         if vote_time > datetime.now():
-            flash('You need to wait %s to vote on that again' % humanize.naturaltime(vote_time))
+            flash('You need to wait %s to vote on that again.' % humanize.naturaltime(vote_time))
         else:
             set_vote_session(shout_id)
             target.dislike()
@@ -106,16 +107,21 @@ def set_vote_session(shout_id_str):
 
 
 class AddForm(Form):
-    shout_text = StringField('Shout', validators=[DataRequired(), Length(min=8, max=140)])
+    shout_text = StringField('Post', validators=[DataRequired(), Length(min=8, max=140)])
     recaptcha = RecaptchaField('ReCaptcha')
 
 
 @app.route('/', methods=['GET'])
 def index():
     form = AddForm()
-    shouts = Shout.query.order_by(Shout.likes).limit(10).all()
+    shouts = Shout.query.order_by(Shout.likes.desc()).limit(10).all()
     return render_template('index.html', title='Index', form=form, shouts=shouts)
 
 
+@app.template_filter()
+def timesince(datetime):
+    return humanize.naturaltime(datetime)
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
