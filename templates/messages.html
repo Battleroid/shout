@@ -3,6 +3,8 @@
         {% if messages %}
             {% for category, message in messages %}
                 {% if category == 'error' %}
+                    <div class="alert alert-danger alert-dismissable">
+                {% elif category == 'warning' %}
                     <div class="alert alert-warning alert-dismissable">
                 {% else %}
                     <div class="alert alert-success alert-dismissable">

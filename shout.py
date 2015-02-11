@@ -1,20 +1,23 @@
 import os
 from datetime import datetime, timedelta
-from flask import Flask, url_for, redirect, render_template, session, flash, jsonify
+from flask import Flask, url_for, redirect, render_template, session, flash
 from sqlalchemy import exc
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import Form, RecaptchaField
 from wtforms import StringField
 from wtforms.validators import DataRequired, Length
 import humanize
+from flask_session import Session
 
 app = Flask(__name__)
 SECRET_KEY = os.urandom(64)
 RECAPTCHA_PUBLIC_KEY = '6LfrqAETAAAAAO_BbffXgjLZJ_iEOHNgGBy5Jo2z'
 RECAPTCHA_PRIVATE_KEY = '6LfrqAETAAAAABe7HiBUZAMy9M-lp7kunMwp42eB'
 SQLALCHEMY_DATABASE_URI = 'mysql://shout:shout@127.0.0.1/shout'
+SESSION_TYPE = 'redis'
 app.config.from_object(__name__)
 db = SQLAlchemy(app)
+Session(app)
 
 
 class Shout(db.Model):
@@ -30,32 +33,20 @@ class Shout(db.Model):
 
     def like(self):
         self.likes += 1
+        self.remove_self()
 
     def dislike(self):
         self.likes -= 1
+        self.remove_self()
+
+    def remove_self(self):
+        if self.likes < -4:
+            db.session.delete(self)
+
 
     def __repr__(self):
         return '<Shout %r at %r>' % (self.shout, self.created)
 
-class Vote(db.Model):
-    __tablename__ = 'vote'
-
-    id = db.Column(db.Integer, primary_key=True)
-    ip = db.Column(db.String(15), nullable=False)
-    vote_time = db.Column(db.DateTime, default=datetime.now())
-    can_vote= db.Column(db.DateTime, default=timedelta(days=1) + datetime.now())
-
-    def __init__(self, ip):
-        self.ip = ip
-
-    def able_to_vote(self):
-        return datetime.now() > self.can_vote
-
-    def can_vote_when(self):
-        return humanize.naturaltime(self.can_vote)
-
-    def __repr__(self):
-        return '<Vote %s at %s, can vote in %s>' % (self.ip, self.vote_time, self.can_vote_when())
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -91,7 +82,7 @@ def like(shout_id):
     else:
         vote_time = session[shout_id] + timedelta(days=1)
         if vote_time > datetime.now():
-            flash('You need to wait %s to vote on that again.' % humanize.naturaltime(vote_time), 'error')
+            flash('You need to wait %s to vote on that again.' % humanize.naturaltime(vote_time), 'warning')
         else:
             set_vote_session(shout_id)
             target.like()
@@ -112,7 +103,7 @@ def dislike(shout_id):
     else:
         vote_time = session[shout_id] + timedelta(days=1)
         if vote_time > datetime.now():
-            flash('You need to wait %s to vote on that again.' % humanize.naturaltime(vote_time), 'error')
+            flash('You need to wait %s to vote on that again.' % humanize.naturaltime(vote_time), 'warning')
         else:
             set_vote_session(shout_id)
             target.dislike()
