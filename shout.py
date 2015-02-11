@@ -11,9 +11,9 @@ from flask_session import Session
 
 app = Flask(__name__)
 SECRET_KEY = os.urandom(64)
-RECAPTCHA_PUBLIC_KEY = '6LfrqAETAAAAAO_BbffXgjLZJ_iEOHNgGBy5Jo2z'
-RECAPTCHA_PRIVATE_KEY = '6LfrqAETAAAAABe7HiBUZAMy9M-lp7kunMwp42eB'
-SQLALCHEMY_DATABASE_URI = 'mysql://shout:shout@127.0.0.1/shout'
+RECAPTCHA_PUBLIC_KEY = 'changeme'
+RECAPTCHA_PRIVATE_KEY = 'changeme'
+SQLALCHEMY_DATABASE_URI = 'mysql://user:pass@host/database'
 SESSION_TYPE = 'redis'
 app.config.from_object(__name__)
 db = SQLAlchemy(app)
@@ -119,7 +119,7 @@ def set_vote_session(shout_id_str):
 
 class AddForm(Form):
     shout_text = StringField('Post', validators=[DataRequired(), Length(min=8, max=140)])
-    recaptcha = RecaptchaField('ReCaptcha')
+    recaptcha = RecaptchaField('reCAPTCHA')
 
 
 @app.route('/', methods=['GET'])
@@ -135,4 +135,4 @@ def timesince(datetime):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run()
