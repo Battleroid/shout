@@ -14,6 +14,7 @@ SECRET_KEY = os.urandom(64)
 RECAPTCHA_PUBLIC_KEY = 'changeme'
 RECAPTCHA_PRIVATE_KEY = 'changeme'
 SQLALCHEMY_DATABASE_URI = 'mysql://user:pass@host/database'
+PAGINATE_MAX = 25
 SESSION_TYPE = 'redis'
 app.config.from_object(__name__)
 db = SQLAlchemy(app)
@@ -125,7 +126,7 @@ class AddForm(Form):
 @app.route('/', methods=['GET'])
 def index():
     form = AddForm()
-    shouts = Shout.query.order_by(Shout.likes.desc()).limit(10).all()
+    shouts = Shout.query.order_by(Shout.likes.desc()).limit(app.config['PAGINATE_MAX']).all()
     return render_template('index.html', title='Shout', form=form, shouts=shouts)
 
 
