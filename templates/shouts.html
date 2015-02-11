@@ -1,0 +1,27 @@
+{% if not shouts %}
+    <h3>No one is talking.</h3>
+{% else %}
+    {% for shout in shouts %}
+        <div class="panel panel-default">
+            <div class="panel-body">
+                {{ shout.shout }}
+                <small class="text-muted">{{ shout.created|timesince }}</small>
+            </div>
+            <div class="panel-footer">
+                <div class="btn-group btn-group-xs" role="group" aria-label="like/dislike">
+                    <a role="button" href="{{ url_for('like', shout_id=shout.id) }}"
+                       class="btn btn-default">Like</a>
+                    <a role="button" href="{{ url_for('dislike', shout_id=shout.id) }}"
+                       class="btn btn-default">Dislike</a>
+                </div>
+                {% if shout.likes == 0 %}
+                    <span class="badge pull-right">{{ shout.likes }}</span>
+                {% elif shout.likes > 0 %}
+                    <span class="badge badge-success pull-right">{{ shout.likes }}</span>
+                {% else %}
+                    <span class="badge badge-danger pull-right">{{ shout.likes }}</span>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
