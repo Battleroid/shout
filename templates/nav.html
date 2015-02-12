@@ -1,7 +1,12 @@
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container-fluid">
-        <div class="navbar-header"><a class="navbar-brand" href="{{ url_for('index') }}">{{ title }}</a></div>
-        <div class="navbar-collapse collapse">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#shout-navbar"><span
+                    class="sr-only">Toggle Navigation</span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span><span class="icon-bar"></span></button>
+            <a class="navbar-brand" href="{{ url_for('index') }}">{{ title }}</a>
+        </div>
+        <div class="navbar-collapse collapse" id="shout-navbar">
             <button type="button" class="btn btn-danger navbar-btn" data-toggle="modal" data-target="#shout-modal">New
                 Post
             </button>
