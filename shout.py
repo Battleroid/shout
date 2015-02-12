@@ -13,7 +13,7 @@ app = Flask(__name__)
 SECRET_KEY = os.urandom(64)
 RECAPTCHA_PUBLIC_KEY = 'changeme'
 RECAPTCHA_PRIVATE_KEY = 'changeme'
-SQLALCHEMY_DATABASE_URI = 'mysql://shout:shout@localhost/shout'
+SQLALCHEMY_DATABASE_URI = 'mysql://user:pass@localhost/database'
 PAGINATE_MAX = 25
 SESSION_TYPE = 'redis'
 app.config.from_object(__name__)
@@ -136,4 +136,4 @@ def timesince(datetime):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
