@@ -1,0 +1,7 @@
+.panel {
+    width: 25%;
+}
+
+.panel.w2 {
+    width: 50%;
+}
