@@ -31,6 +31,7 @@ class Shout(db.Model):
 
     def __init__(self, shout):
         self.shout = shout
+        self.created = datetime.now()
 
     def like(self):
         self.likes += 1
